@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" style="font-family: 'Times New Roman', serif;">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body { 
+          background: #f4f1e8; 
+          color: #2c1810; 
+          margin: 0; 
+          padding: 20px;
+          line-height: 1.6;
+      }
+      .newspaper {
+          max-width: 800px;
+          margin: 0 auto;
+          background: #faf8f3;
+          padding: 40px;
+          box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      }
+      .masthead {
+          text-align: center;
+          border-bottom: 3px solid #8b0000;
+          padding-bottom: 20px;
+          margin-bottom: 30px;
+      }
+      .title {
+          font-size: 3.5rem;
+          font-weight: bold;
+          letter-spacing: 2px;
+          margin: 0;
+          text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+      }
+      .subtitle {
+          font-size: 1.2rem;
+          font-style: italic;
+          margin: 10px 0 0 0;
+          color: #666;
+      }
+      .headline {
+          font-size: 2rem;
+          font-weight: bold;
+          text-align: center;
+          margin: 30px 0 20px 0;
+          border-bottom: 2px solid #333;
+          padding-bottom: 10px;
+      }
+      .columns {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 30px;
+          margin: 20px 0;
+      }
+      .article {
+          text-align: justify;
+          font-size: 1rem;
+      }
+      .court-form {
+          background: #fff;
+          border: 2px solid #8b0000;
+          padding: 25px;
+          margin: 30px 0;
+          text-align: center;
+      }
+      .submit-btn {
+          background: #8b0000;
+          color: white;
+          border: none;
+          padding: 12px 30px;
+          font-size: 1.1rem;
+          cursor: pointer;
+          margin-top: 15px;
+          font-family: 'Times New Roman', serif;
+      }
+      .submit-btn:hover {
+          background: #660000;
+      }
+      .word-input {
+          font-size: 1.2rem;
+          padding: 10px;
+          border: 2px solid #333;
+          margin: 0 10px;
+          font-family: 'Times New Roman', serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="newspaper">
+      <div class="masthead">
+        <h1 class="title">WORD COURT</h1>
+        <p class="subtitle">The People's Tribune for Disputed Word Legality</p>
+        <p style="font-size: 0.9rem; margin: 5px 0 0 0;">
+          Est. 2024 • Serving Word Game Enthusiasts Everywhere
+        </p>
+      </div>
+
+      <div class="headline">
+        AI JUSTICES READY TO HEAR YOUR CASE
+      </div>
+
+      <div class="columns">
+        <div class="article">
+          <p>
+            <strong>BREAKING:</strong>
+            Revolutionary three-judge AI panel now available to settle word disputes that have plagued casual Scrabble players for decades.
+          </p>
+          <p>
+            The innovative court system features a prosecuting AI that argues against questionable words, a defending AI that advocates for word validity, and a presiding judge AI that weighs all evidence.
+          </p>
+        </div>
+        <div class="article">
+          <p>
+            Cases are heard in real-time with full transparency. All arguments, evidence, and reasoning are preserved for the court record.
+          </p>
+          <p>
+            <em>"No more family arguments over whether 'qi' is a real word,"</em>
+            says Chief Digital Justice. <em>"We'll settle it once and for all."</em>
+          </p>
+        </div>
+      </div>
+
+      <div class="court-form">
+        <h2 style="margin-top: 0; color: #8b0000;">SUBMIT YOUR CASE</h2>
+        <p>Present your disputed word to our esteemed AI judicial panel</p>
+        <div>
+          <input type="text" class="word-input" placeholder="Enter disputed word" maxlength="20" />
+          <button class="submit-btn">PRESENT TO COURT</button>
+        </div>
+        <p style="font-size: 0.9rem; margin-top: 15px; color: #666;">
+          Court is in session 24/7 • No appointment necessary
+        </p>
+      </div>
+
+      <div style="text-align: center; margin-top: 40px; font-size: 0.8rem; color: #888;">
+        Word Court Gazette • Volume 1, Issue 1 • Digital Edition
+      </div>
+    </div>
+  </body>
+</html>

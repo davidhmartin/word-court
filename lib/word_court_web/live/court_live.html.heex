@@ -1,0 +1,139 @@
+<Layouts.app flash={@flash}>
+  <div
+    class="min-h-screen bg-amber-50 text-stone-800"
+    style="font-family: 'Times New Roman', serif;"
+  >
+    <!-- Newspaper Header -->
+    <div class="text-center border-b-4 border-red-800 pb-6 mb-8 relative">
+      <!-- AI Settings Link -->
+      <div class="absolute top-4 right-4">
+        <.link
+          navigate="/ai-settings"
+          class="inline-flex items-center px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors font-serif text-sm"
+        >
+          ⚙️ AI Settings
+        </.link>
+      </div>
+
+      <h1 class="text-5xl font-bold tracking-wider text-stone-900 mb-2">WORD COURT</h1>
+      <p class="text-lg italic text-stone-600">Live Courtroom Session • Case in Progress</p>
+      <p class="text-sm text-stone-500">Est. 2024 • Serving Word Game Enthusiasts Everywhere</p>
+    </div>
+
+    <div class="max-w-4xl mx-auto px-6">
+      <%= if @case_status == :idle do %>
+        <!-- Word Submission Form -->
+        <div class="bg-white border-4 border-red-800 p-8 mb-8 text-center">
+          <h2 class="text-3xl font-bold text-red-800 mb-4">SUBMIT YOUR CASE</h2>
+          <p class="text-lg mb-6">Present your disputed word to our esteemed AI judicial panel</p>
+
+          <.form
+            for={@form}
+            id="word-form"
+            phx-change="validate"
+            phx-submit="submit_word"
+            class="flex flex-col sm:flex-row items-center justify-center gap-4"
+          >
+            <.input
+              field={@form[:word]}
+              type="text"
+              placeholder="Enter disputed word"
+              maxlength="20"
+              class="text-xl px-4 py-3 border-2 border-stone-800 rounded-none bg-white text-stone-800 placeholder:text-stone-500 focus:border-red-800 focus:ring focus:ring-red-200 focus:ring-opacity-50"
+              error_class="border-red-500 focus:border-red-600 focus:ring focus:ring-red-300"
+            />
+            <button
+              type="submit"
+              class="bg-red-800 hover:bg-red-900 text-white font-bold px-8 py-3 text-lg border-none cursor-pointer transition-colors"
+            >
+              PRESENT TO COURT
+            </button>
+          </.form>
+
+          <p class="text-sm text-stone-600 mt-4">
+            Court is in session 24/7 • No appointment necessary
+          </p>
+        </div>
+      <% else %>
+        <!-- Active Case Display -->
+        <div class="bg-white border-4 border-red-800 p-8 mb-8">
+          <div class="text-center mb-6">
+            <h2 class="text-3xl font-bold text-red-800">CASE IN SESSION</h2>
+            <p class="text-xl">
+              The People vs. "<span class="font-bold"><%= @word %></span>"
+            </p>
+            <p class="text-sm text-stone-600 mt-2">
+              Case Status: {String.upcase(to_string(@case_status))}
+            </p>
+          </div>
+          
+<!-- Case Status -->
+          <div class="border-2 border-stone-400 p-4 mb-6 bg-stone-50">
+            <h3 class="font-bold text-lg mb-2">COURT STATUS:</h3>
+            <%= case @case_status do %>
+              <% :submitted -> %>
+                <p class="text-lg">📝 Case submitted and docketed</p>
+              <% :prosecution -> %>
+                <p class="text-lg">⚖️ Prosecution presenting arguments...</p>
+              <% :defense -> %>
+                <p class="text-lg">🛡️ Defense presenting counter-arguments...</p>
+              <% :judgment -> %>
+                <p class="text-lg">👨‍⚖️ Judge deliberating final verdict...</p>
+              <% :complete -> %>
+                <p class="text-lg">✅ Case concluded - Verdict rendered</p>
+              <% :error -> %>
+                <p class="text-lg text-red-600">⚠️ Court error - Please try again</p>
+            <% end %>
+          </div>
+          
+<!-- Arguments Display -->
+          <%= if @prosecutor_argument != "" do %>
+            <div class="border-2 border-red-600 p-4 mb-4 bg-red-50">
+              <h3 class="font-bold text-lg text-red-800 mb-2">⚔️ PROSECUTION ARGUMENT:</h3>
+              <p class="text-base leading-relaxed">{@prosecutor_argument}</p>
+            </div>
+          <% end %>
+
+          <%= if @defender_argument != "" do %>
+            <div class="border-2 border-blue-600 p-4 mb-4 bg-blue-50">
+              <h3 class="font-bold text-lg text-blue-800 mb-2">🛡️ DEFENSE ARGUMENT:</h3>
+              <p class="text-base leading-relaxed">{@defender_argument}</p>
+            </div>
+          <% end %>
+
+          <%= if @judge_verdict != "" do %>
+            <div class="border-4 border-yellow-600 p-6 mb-4 bg-yellow-50">
+              <h3 class="font-bold text-xl text-yellow-800 mb-3">👨‍⚖️ FINAL VERDICT:</h3>
+              <div class={[
+                "text-2xl font-bold mb-4 p-4 rounded",
+                (String.contains?(String.upcase(@judge_verdict), "ACCEPTED") &&
+                   "text-green-700 bg-green-100") ||
+                  (String.contains?(String.upcase(@judge_verdict), "REJECTED") &&
+                     "text-red-700 bg-red-100") ||
+                  "text-gray-700 bg-gray-100"
+              ]}>
+                {@judge_verdict}
+              </div>
+            </div>
+          <% end %>
+
+          <%= if @case_status == :complete do %>
+            <div class="text-center">
+              <button
+                phx-click="new_case"
+                class="bg-stone-600 hover:bg-stone-700 text-white font-bold px-6 py-3 text-lg border-none cursor-pointer transition-colors"
+              >
+                HEAR NEW CASE
+              </button>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+      
+<!-- Footer -->
+      <div class="text-center text-sm text-stone-500 mt-8">
+        Word Court Gazette • Live Digital Edition • Powered by AI Justice
+      </div>
+    </div>
+  </div>
+</Layouts.app>

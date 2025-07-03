@@ -1,0 +1,474 @@
+<Layouts.app flash={@flash}>
+  <div class="min-h-screen bg-gradient-to-br from-amber-50 to-yellow-100 py-8">
+    <div class="max-w-6xl mx-auto px-4">
+      <!-- Header -->
+      <div class="text-center mb-8">
+        <h1 class="text-5xl font-bold text-gray-800 font-serif mb-2">
+          ⚖️ AI COURTROOM SETTINGS
+        </h1>
+        <div class="w-32 h-1 bg-red-700 mx-auto mb-4"></div>
+        <p class="text-xl text-gray-600 font-serif italic">Configure Your Digital Magistrates</p>
+      </div>
+      
+<!-- Back to Court Link -->
+      <div class="mb-6">
+        <.link
+          navigate="/"
+          class="inline-flex items-center px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors font-serif"
+        >
+          ← Back to Court
+        </.link>
+      </div>
+      
+<!-- Active Configuration Display -->
+      <div class="bg-white border-4 border-gray-800 rounded-lg p-6 mb-8 shadow-lg">
+        <h2 class="text-2xl font-bold text-gray-800 font-serif mb-4 flex items-center">
+          <span class="w-3 h-3 bg-green-500 rounded-full mr-3 animate-pulse"></span>
+          Currently Active: {@active_setting.name}
+        </h2>
+        <p class="text-gray-600 font-serif mb-4">{@active_setting.description}</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div>
+            <span class="font-bold text-red-700">Temperature:</span>
+            {@active_setting.temperature}
+            <span class="text-gray-500">
+              ({WordCourt.AISettings.Setting.temperature_description(@active_setting.temperature)})
+            </span>
+          </div>
+          <div>
+            <span class="font-bold text-red-700">Max Tokens:</span> {@active_setting.max_tokens}
+          </div>
+          <div>
+            <span class="font-bold text-red-700">Model:</span> {@active_setting.model}
+          </div>
+        </div>
+        
+<!-- Individual Agent Settings Display -->
+        <%= if @active_setting.prosecutor_temperature || @active_setting.defender_temperature || @active_setting.judge_temperature do %>
+          <div class="mt-6 border-t-2 border-gray-200 pt-4">
+            <h3 class="text-lg font-bold text-gray-800 font-serif mb-3">
+              Individual Agent Settings:
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <!-- Prosecutor -->
+              <div class="bg-red-50 border border-red-200 rounded p-3">
+                <h4 class="font-bold text-red-700 mb-2">⚔️ Prosecutor</h4>
+                <div>
+                  Temp: {@active_setting.prosecutor_temperature || @active_setting.temperature}
+                </div>
+                <div>
+                  Tokens: {@active_setting.prosecutor_max_tokens || @active_setting.max_tokens}
+                </div>
+                <div>Model: {@active_setting.prosecutor_model || @active_setting.model}</div>
+              </div>
+              
+<!-- Defender -->
+              <div class="bg-blue-50 border border-blue-200 rounded p-3">
+                <h4 class="font-bold text-blue-700 mb-2">🛡️ Defender</h4>
+                <div>
+                  Temp: {@active_setting.defender_temperature || @active_setting.temperature}
+                </div>
+                <div>
+                  Tokens: {@active_setting.defender_max_tokens || @active_setting.max_tokens}
+                </div>
+                <div>Model: {@active_setting.defender_model || @active_setting.model}</div>
+              </div>
+              
+<!-- Judge -->
+              <div class="bg-yellow-50 border border-yellow-200 rounded p-3">
+                <h4 class="font-bold text-yellow-700 mb-2">👨‍⚖️ Judge</h4>
+                <div>
+                  Temp: {@active_setting.judge_temperature || @active_setting.temperature}
+                </div>
+                <div>
+                  Tokens: {@active_setting.judge_max_tokens || @active_setting.max_tokens}
+                </div>
+                <div>Model: {@active_setting.judge_model || @active_setting.model}</div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      
+<!-- Add New Configuration Button -->
+      <div class="mb-6">
+        <button
+          phx-click="new_setting"
+          class="px-6 py-3 bg-red-700 text-white rounded-lg hover:bg-red-800 transition-colors font-serif font-bold"
+        >
+          + Create New Configuration
+        </button>
+      </div>
+      
+<!-- Configuration Form -->
+      <%= if @show_form do %>
+        <div class="bg-white border-4 border-red-700 rounded-lg p-6 mb-8 shadow-lg">
+          <h3 class="text-2xl font-bold text-gray-800 font-serif mb-6">
+            {if @editing_setting.id, do: "Edit Configuration", else: "New Configuration"}
+          </h3>
+
+          <.form
+            for={@form}
+            id="ai-setting-form"
+            phx-change="validate"
+            phx-submit="save"
+            class="space-y-6"
+          >
+            <!-- Basic Info -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <.input
+                field={@form[:name]}
+                type="text"
+                label="Configuration Name"
+                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg font-serif text-gray-800 bg-white focus:border-red-500 focus:ring focus:ring-red-200"
+                required
+              />
+              <.input
+                field={@form[:description]}
+                type="text"
+                label="Description"
+                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg font-serif text-gray-800 bg-white focus:border-red-500 focus:ring focus:ring-red-200"
+              />
+            </div>
+            
+<!-- Global AI Parameters -->
+            <div class="border-2 border-gray-300 rounded-lg p-4">
+              <h4 class="text-xl font-bold text-gray-800 font-serif mb-4">
+                Global Default Settings
+              </h4>
+              <p class="text-sm text-gray-600 mb-4">
+                These are fallback values when individual agent settings are not specified.
+              </p>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <.input
+                  field={@form[:temperature]}
+                  type="number"
+                  label="Default Temperature"
+                  step="0.1"
+                  min="0.0"
+                  max="2.0"
+                  class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg font-serif text-gray-800 bg-white focus:border-red-500 focus:ring focus:ring-red-200"
+                  required
+                />
+                <.input
+                  field={@form[:max_tokens]}
+                  type="number"
+                  label="Default Max Tokens"
+                  min="50"
+                  max="4000"
+                  class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg font-serif text-gray-800 bg-white focus:border-red-500 focus:ring focus:ring-red-200"
+                  required
+                />
+                <div>
+                  <label class="block text-sm font-bold text-gray-700 font-serif mb-2">
+                    Default Model
+                  </label>
+                  <select
+                    name="setting[model]"
+                    id="setting_model"
+                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg font-serif text-gray-800 bg-white focus:border-red-500 focus:ring focus:ring-red-200"
+                  >
+                    <%= for {label, value} <- WordCourt.AISettings.Setting.model_options() do %>
+                      <option
+                        value={value}
+                        selected={value == (@form[:model].value || "gpt-3.5-turbo")}
+                      >
+                        {label}
+                      </option>
+                    <% end %>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+<!-- Individual Agent Settings -->
+            <div class="border-2 border-red-300 rounded-lg p-4 bg-red-50">
+              <h4 class="text-xl font-bold text-gray-800 font-serif mb-4">
+                Individual Agent Settings
+              </h4>
+              <p class="text-sm text-gray-600 mb-4">
+                Override global settings for specific agents. Leave blank to use global defaults.
+              </p>
+              
+<!-- Prosecutor Settings -->
+              <div class="mb-6 bg-white border border-red-200 rounded p-4">
+                <h5 class="text-lg font-bold text-red-700 font-serif mb-3">
+                  ⚔️ Prosecutor Settings
+                </h5>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <.input
+                    field={@form[:prosecutor_temperature]}
+                    type="number"
+                    label="Temperature"
+                    step="0.1"
+                    min="0.0"
+                    max="2.0"
+                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg font-serif text-gray-800 bg-white focus:border-red-500 focus:ring focus:ring-red-200"
+                  />
+                  <.input
+                    field={@form[:prosecutor_max_tokens]}
+                    type="number"
+                    label="Max Tokens"
+                    min="50"
+                    max="4000"
+                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg font-serif text-gray-800 bg-white focus:border-red-500 focus:ring focus:ring-red-200"
+                  />
+                  <div>
+                    <label class="block text-sm font-bold text-gray-700 font-serif mb-2">
+                      Model
+                    </label>
+                    <select
+                      name="setting[prosecutor_model]"
+                      id="setting_prosecutor_model"
+                      class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg font-serif text-gray-800 bg-white focus:border-red-500 focus:ring focus:ring-red-200"
+                    >
+                      <option value="">Use Default</option>
+                      <%= for {label, value} <- WordCourt.AISettings.Setting.model_options() do %>
+                        <option value={value} selected={value == @form[:prosecutor_model].value}>
+                          {label}
+                        </option>
+                      <% end %>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              
+<!-- Defender Settings -->
+              <div class="mb-6 bg-white border border-blue-200 rounded p-4">
+                <h5 class="text-lg font-bold text-blue-700 font-serif mb-3">
+                  🛡️ Defender Settings
+                </h5>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <.input
+                    field={@form[:defender_temperature]}
+                    type="number"
+                    label="Temperature"
+                    step="0.1"
+                    min="0.0"
+                    max="2.0"
+                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg font-serif text-gray-800 bg-white focus:border-blue-500 focus:ring focus:ring-blue-200"
+                  />
+                  <.input
+                    field={@form[:defender_max_tokens]}
+                    type="number"
+                    label="Max Tokens"
+                    min="50"
+                    max="4000"
+                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg font-serif text-gray-800 bg-white focus:border-blue-500 focus:ring focus:ring-blue-200"
+                  />
+                  <div>
+                    <label class="block text-sm font-bold text-gray-700 font-serif mb-2">
+                      Model
+                    </label>
+                    <select
+                      name="setting[defender_model]"
+                      id="setting_defender_model"
+                      class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg font-serif text-gray-800 bg-white focus:border-blue-500 focus:ring focus:ring-blue-200"
+                    >
+                      <option value="">Use Default</option>
+                      <%= for {label, value} <- WordCourt.AISettings.Setting.model_options() do %>
+                        <option value={value} selected={value == @form[:defender_model].value}>
+                          {label}
+                        </option>
+                      <% end %>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              
+<!-- Judge Settings -->
+              <div class="mb-4 bg-white border border-yellow-200 rounded p-4">
+                <h5 class="text-lg font-bold text-yellow-700 font-serif mb-3">
+                  👨‍⚖️ Judge Settings
+                </h5>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <.input
+                    field={@form[:judge_temperature]}
+                    type="number"
+                    label="Temperature"
+                    step="0.1"
+                    min="0.0"
+                    max="2.0"
+                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg font-serif text-gray-800 bg-white focus:border-yellow-500 focus:ring focus:ring-yellow-200"
+                  />
+                  <.input
+                    field={@form[:judge_max_tokens]}
+                    type="number"
+                    label="Max Tokens"
+                    min="50"
+                    max="4000"
+                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg font-serif text-gray-800 bg-white focus:border-yellow-500 focus:ring focus:ring-yellow-200"
+                  />
+                  <div>
+                    <label class="block text-sm font-bold text-gray-700 font-serif mb-2">
+                      Model
+                    </label>
+                    <select
+                      name="setting[judge_model]"
+                      id="setting_judge_model"
+                      class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg font-serif text-gray-800 bg-white focus:border-yellow-500 focus:ring focus:ring-yellow-200"
+                    >
+                      <option value="">Use Default</option>
+                      <%= for {label, value} <- WordCourt.AISettings.Setting.model_options() do %>
+                        <option value={value} selected={value == @form[:judge_model].value}>
+                          {label}
+                        </option>
+                      <% end %>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+<!-- AI Agent Prompts -->
+            <div class="space-y-6">
+              <h4 class="text-xl font-bold text-gray-800 font-serif border-b-2 border-gray-300 pb-2">
+                AI Agent Prompts
+              </h4>
+
+              <.input
+                field={@form[:prosecutor_prompt]}
+                type="textarea"
+                label="Prosecutor Prompt"
+                rows="4"
+                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg font-serif text-gray-800 bg-white focus:border-red-500 focus:ring focus:ring-red-200"
+                required
+              />
+
+              <.input
+                field={@form[:defender_prompt]}
+                type="textarea"
+                label="Defense Attorney Prompt"
+                rows="4"
+                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg font-serif text-gray-800 bg-white focus:border-red-500 focus:ring focus:ring-red-200"
+                required
+              />
+
+              <.input
+                field={@form[:judge_prompt]}
+                type="textarea"
+                label="Judge Prompt"
+                rows="4"
+                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg font-serif text-gray-800 bg-white focus:border-red-500 focus:ring focus:ring-red-200"
+                required
+              />
+            </div>
+            
+<!-- Form Actions -->
+            <div class="flex gap-4 pt-6 border-t-2 border-gray-200">
+              <button
+                type="submit"
+                class="px-8 py-3 bg-red-700 text-white rounded-lg hover:bg-red-800 transition-colors font-serif font-bold"
+              >
+                Save Configuration
+              </button>
+              <button
+                type="button"
+                phx-click="cancel_edit"
+                class="px-8 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors font-serif"
+              >
+                Cancel
+              </button>
+            </div>
+          </.form>
+        </div>
+      <% end %>
+      
+<!-- Configurations List -->
+      <div class="bg-white border-4 border-gray-800 rounded-lg overflow-hidden shadow-lg">
+        <div class="bg-gray-800 text-white p-4">
+          <h3 class="text-xl font-bold font-serif">Available Configurations</h3>
+        </div>
+
+        <div class="divide-y divide-gray-200">
+          <%= for setting <- @settings do %>
+            <div class="p-6 hover:bg-gray-50 transition-colors">
+              <div class="flex justify-between items-start">
+                <div class="flex-1">
+                  <div class="flex items-center gap-3 mb-2">
+                    <h4 class="text-lg font-bold text-gray-800 font-serif">{setting.name}</h4>
+                    <%= if setting.is_preset do %>
+                      <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded font-serif">
+                        PRESET
+                      </span>
+                    <% end %>
+                    <%= if setting.is_active do %>
+                      <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded font-serif">
+                        ACTIVE
+                      </span>
+                    <% end %>
+                  </div>
+                  <p class="text-gray-600 font-serif mb-3">{setting.description}</p>
+                  <div class="grid grid-cols-1 md:grid-cols-4 gap-2 text-sm text-gray-500">
+                    <div><span class="font-bold">Temp:</span> {setting.temperature}</div>
+                    <div><span class="font-bold">Tokens:</span> {setting.max_tokens}</div>
+                    <div><span class="font-bold">Model:</span> {setting.model}</div>
+                    <div>
+                      <span class="font-bold">Created:</span> {Calendar.strftime(
+                        setting.inserted_at,
+                        "%b %d, %Y"
+                      )}
+                    </div>
+                  </div>
+                  
+<!-- Individual Agent Settings Preview -->
+                  <%= if setting.prosecutor_temperature || setting.defender_temperature || setting.judge_temperature do %>
+                    <div class="mt-3 grid grid-cols-1 md:grid-cols-3 gap-2 text-xs text-gray-400">
+                      <div class="bg-red-50 p-2 rounded">
+                        <span class="font-bold text-red-600">Prosecutor:</span>
+                        T:{setting.prosecutor_temperature || setting.temperature}
+                        {setting.prosecutor_model && "| #{setting.prosecutor_model}"}
+                      </div>
+                      <div class="bg-blue-50 p-2 rounded">
+                        <span class="font-bold text-blue-600">Defender:</span>
+                        T:{setting.defender_temperature || setting.temperature}
+                        {setting.defender_model && "| #{setting.defender_model}"}
+                      </div>
+                      <div class="bg-yellow-50 p-2 rounded">
+                        <span class="font-bold text-yellow-600">Judge:</span>
+                        T:{setting.judge_temperature || setting.temperature}
+                        {setting.judge_model && "| #{setting.judge_model}"}
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+
+                <div class="flex gap-2 ml-4">
+                  <%= unless setting.is_active do %>
+                    <button
+                      phx-click="activate_setting"
+                      phx-value-id={setting.id}
+                      class="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors font-serif"
+                    >
+                      Activate
+                    </button>
+                  <% end %>
+
+                  <button
+                    phx-click="edit_setting"
+                    phx-value-id={setting.id}
+                    class="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors font-serif"
+                  >
+                    Edit
+                  </button>
+
+                  <%= unless setting.is_preset or setting.is_active do %>
+                    <button
+                      phx-click="delete_setting"
+                      phx-value-id={setting.id}
+                      data-confirm="Are you sure you want to delete this configuration?"
+                      class="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors font-serif"
+                    >
+                      Delete
+                    </button>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layouts.app>
