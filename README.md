@@ -183,3 +183,6 @@ If you encounter any issues or have questions:
 **Built with ❤️ using Phoenix LiveView and OpenAI**
 
 *Put your words on trial today!*
+
+---
+© 2025 David Martin. All rights reserved.
