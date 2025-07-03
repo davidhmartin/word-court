@@ -2,6 +2,12 @@
 
 An AI-powered courtroom game where players submit words to be judged by AI prosecutor, defender, and judge agents.
 
+*This is a 100% vibe-coded application that I created to test [Phoenix.new](https://phoenix.new). It implements a prototype of an application that uses
+AI to decide on the legality of a word in Scrabble. I found Phoenix.new to be impressively effective, although expensive - I ate through the entire $20 monthly
+subscription fee in the few hours of elapsed time it took to build this. As for the application itself, well, it works, but the AI output is not particularly 
+impressive. If I were to build this out into a real app, I would focus on AI prompting, more specifically tuned AI personality profiles, the ability to configure 
+specific rules for what types of words should be allowed, and dictionary access.*
+
 ## 🎮 Game Overview
 
 Word Court is an interactive Phoenix LiveView application that puts words on trial! Players submit a word, and three AI agents debate its merits:
